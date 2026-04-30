@@ -263,6 +263,36 @@
 \Sssu
 \Smssu
 
+% Selected non-ASCII Unicode characters used in manual prose, routed
+% through urldefs.  See pl.sty for the full mapping.
+\Ssupzero
+\Ssupone
+\Ssuptwo
+\Ssupthree
+\Ssupfour
+\Ssupfive
+\Ssupsix
+\Ssupseven
+\Ssupeight
+\Ssupnine
+\Ssubzero
+\Ssubone
+\Ssubtwo
+\Ssubthree
+\Ssubfour
+\Ssubfive
+\Ssubsix
+\Ssubseven
+\Ssubeight
+\Ssubnine
+\SDz
+\Sleq
+\Sgeq
+\Slaquo
+\Sraquo
+\Seuro
+\Smiddot
+
 % These are hacks to get the index right
 
 \+

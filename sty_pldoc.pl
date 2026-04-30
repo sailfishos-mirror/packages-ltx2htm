@@ -598,6 +598,41 @@ cmd(arg({Param}, {Description}),
 
 cmd(backslash, #code(\)).
 cmd(bsl, #code(\)).
+
+% Non-ASCII Unicode urldefs.  put_html_token/1 in tex.c encodes
+% atom contents via PL_atom_chars (Latin-1 only), so we cannot rely
+% on the generic urldef -> #code path: a code point above 0xFF would
+% be truncated and a code point in 0x80..0xFF would emit a single
+% byte that browsers cannot interpret as UTF-8.  Emit numeric HTML
+% entities instead.
+cmd('Ssupzero', html('&#x2070;')).      % superscript zero
+cmd('Ssupone', html('&#x00B9;')).       % superscript one
+cmd('Ssuptwo', html('&#x00B2;')).       % superscript two
+cmd('Ssupthree', html('&#x00B3;')).     % superscript three
+cmd('Ssupfour', html('&#x2074;')).
+cmd('Ssupfive', html('&#x2075;')).
+cmd('Ssupsix', html('&#x2076;')).
+cmd('Ssupseven', html('&#x2077;')).
+cmd('Ssupeight', html('&#x2078;')).
+cmd('Ssupnine', html('&#x2079;')).
+cmd('Ssubzero', html('&#x2080;')).
+cmd('Ssubone', html('&#x2081;')).
+cmd('Ssubtwo', html('&#x2082;')).
+cmd('Ssubthree', html('&#x2083;')).
+cmd('Ssubfour', html('&#x2084;')).
+cmd('Ssubfive', html('&#x2085;')).
+cmd('Ssubsix', html('&#x2086;')).
+cmd('Ssubseven', html('&#x2087;')).
+cmd('Ssubeight', html('&#x2088;')).
+cmd('Ssubnine', html('&#x2089;')).
+cmd('SDz', html('&#x01C5;')).           % Dz titlecase
+cmd('Sleq', html('&#x2264;')).          % less-than or equal to
+cmd('Sgeq', html('&#x2265;')).          % greater-than or equal to
+cmd('Slaquo', html('&#x00AB;')).        % left double angle quote
+cmd('Sraquo', html('&#x00BB;')).        % right double angle quote
+cmd('Seuro', html('&#x20AC;')).         % euro sign
+cmd('Smiddot', html('&#x00B7;')).       % middle dot
+
 cmd(Cmd, HTML) :-
     urldef(Cmd, Atom),
     !,
