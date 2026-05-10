@@ -2274,16 +2274,16 @@ build_list(Token t, void *context)
       break;
     case TOK_VERB:
       if ( !PL_unify_term(ctx->head,
-			  PL_FUNCTOR, FUNCTOR_verb2,
-			  PL_CHARS,   t->context,
-			  PL_STRING,  t->value.string) )
+			  PL_FUNCTOR,    FUNCTOR_verb2,
+			  PL_UTF8_CHARS, t->context,
+			  PL_UTF8_STRING, t->value.string) )
 	return FALSE;
       break;
     case TOK_VERBATIM:
       if ( !PL_unify_term(ctx->head,
-			  PL_FUNCTOR, FUNCTOR_verbatim2,
-			  PL_CHARS,   t->context,
-			  PL_STRING,  t->value.string) )
+			  PL_FUNCTOR,    FUNCTOR_verbatim2,
+			  PL_UTF8_CHARS, t->context,
+			  PL_UTF8_STRING, t->value.string) )
 	return FALSE;
       break;
     case TOK_PAR:
