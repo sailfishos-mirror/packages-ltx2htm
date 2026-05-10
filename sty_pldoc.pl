@@ -599,12 +599,9 @@ cmd(arg({Param}, {Description}),
 cmd(backslash, #code(\)).
 cmd(bsl, #code(\)).
 
-% Non-ASCII Unicode urldefs.  put_html_token/1 in tex.c encodes
-% atom contents via PL_atom_chars (Latin-1 only), so we cannot rely
-% on the generic urldef -> #code path: a code point above 0xFF would
-% be truncated and a code point in 0x80..0xFF would emit a single
-% byte that browsers cannot interpret as UTF-8.  Emit numeric HTML
-% entities instead.
+% Non-ASCII Unicode urldefs.  Emit numeric HTML entities; equivalent to
+% the generic urldef -> #code path (now UTF-8 safe via PL_get_chars/
+% REP_UTF8 in tex.c), but explicit and engine-independent.
 cmd('Ssupzero', html('&#x2070;')).      % superscript zero
 cmd('Ssupone', html('&#x00B9;')).       % superscript one
 cmd('Ssuptwo', html('&#x00B2;')).       % superscript two
@@ -675,7 +672,7 @@ load_urldefs(File) :-
     urldefs_loaded(File),
     !.
 load_urldefs(File) :-
-    open(File, read, In),
+    open(File, read, In, [encoding(utf8)]),
     call_cleanup((   read_line_to_codes(In, L0),
                      process_urldefs(L0, In)),
                  close(In)),
