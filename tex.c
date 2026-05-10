@@ -407,14 +407,9 @@ mygetc(Input fd)
       break;
   }
 
-  if ( c >= 128	&& c != EOF )
-  { if ( fd->type == INPUT_FILE )
-      fprintf(stderr, "WARNING: %s:%d: non-ASCII character (%d)\n",
-	      fd->name, fd->lineno, c);
-    else
-      fprintf(stderr, "WARNING: non-ASCII character (%d) in string (%s)\n",
-	      c, fd->name);
-  }
+  /* Bytes >= 128 are treated as opaque UTF-8 continuation/lead bytes;
+     they are classified as LC by char_type[] and accumulate into words.
+     The byte sequence is preserved through to PL_unify_chars(REP_UTF8). */
 
   if ( c == '\n' )
     fd->lineno++;
@@ -2298,7 +2293,8 @@ build_list(Token t, void *context)
 	return FALSE;
       break;
     case TOK_WORD:
-      if ( !PL_unify_atom_chars(ctx->head, t->value.string) )
+      if ( !PL_unify_chars(ctx->head, PL_ATOM|REP_UTF8, (size_t)-1,
+			   t->value.string) )
 	return FALSE;
       break;
     case TOK_SPACE:
@@ -2659,7 +2655,7 @@ pl_put_html_token(term_t term)
   { term_t a = PL_new_term_ref();
 
     if ( PL_get_arg(1, term, a) &&
-	 PL_get_chars(a, &s, CVT_ATOMIC) &&
+	 PL_get_chars(a, &s, CVT_ATOMIC|REP_UTF8|BUF_RING) &&
 	 PL_get_arg(2, term, a) &&
 	 PL_get_integer(a, &t.prelines) &&
 	 PL_get_arg(3, term, a) &&
@@ -2671,7 +2667,7 @@ pl_put_html_token(term_t term)
   { term_t a = PL_new_term_ref();
 
     if ( PL_get_arg(1, term, a) &&
-	 PL_get_chars(a, &s, CVT_ATOMIC) )
+	 PL_get_chars(a, &s, CVT_ATOMIC|REP_UTF8|BUF_RING) )
     { t.type = TOK_CMD;
       t.value.string = s;
       t.prelines = t.postlines = 0;
@@ -2680,7 +2676,7 @@ pl_put_html_token(term_t term)
   { term_t a = PL_new_term_ref();
 
     if ( PL_get_arg(1, term, a) &&
-	 PL_get_chars(a, &s, CVT_ATOMIC) )
+	 PL_get_chars(a, &s, CVT_ATOMIC|REP_UTF8|BUF_RING) )
     { t.type = TOK_VERBATIM;
       t.value.string = s;
     }
@@ -2688,7 +2684,7 @@ pl_put_html_token(term_t term)
   { term_t a = PL_new_term_ref();
 
     if ( PL_get_arg(1, term, a) &&
-	 PL_get_chars(a, &s, CVT_ATOMIC) )
+	 PL_get_chars(a, &s, CVT_ATOMIC|REP_UTF8|BUF_RING) )
     { t.type = TOK_VERB;
       t.value.string = s;
     }
@@ -2696,7 +2692,7 @@ pl_put_html_token(term_t term)
   { term_t a = PL_new_term_ref();
 
     if ( PL_get_arg(1, term, a) &&
-	 PL_get_chars(a, &s, CVT_ATOMIC) )
+	 PL_get_chars(a, &s, CVT_ATOMIC|REP_UTF8|BUF_RING) )
     { t.type = TOK_PRE;
       t.value.string = s;
     }
@@ -2704,7 +2700,7 @@ pl_put_html_token(term_t term)
   { term_t a = PL_new_term_ref();
 
     if ( PL_get_arg(1, term, a) &&
-	 PL_get_chars(a, &s, CVT_ATOMIC) )
+	 PL_get_chars(a, &s, CVT_ATOMIC|REP_UTF8|BUF_RING) )
     { t.type = TOK_NOSPACEWORD;
       t.value.string = s;
     }
@@ -2715,7 +2711,7 @@ pl_put_html_token(term_t term)
     } else if ( atom == ATOM_nl )
     { t.type = TOK_LINE;
       t.value.string = "\n";
-    } else
+    } else if ( PL_get_chars(term, &s, CVT_ATOM|REP_UTF8|BUF_RING) )
     { if ( last_is_word )		/* regenerate the space tokens */
       { t.type = TOK_SPACE;
 	t.value.string = " ";
@@ -2725,9 +2721,9 @@ pl_put_html_token(term_t term)
 	last_is_word = TRUE;
 
       t.type = TOK_WORD;
-      t.value.string = (char *)PL_atom_chars(atom);
+      t.value.string = s;
     }
-  } else if ( PL_get_chars(term, &s, CVT_ALL) )
+  } else if ( PL_get_chars(term, &s, CVT_ALL|REP_UTF8|BUF_RING) )
   { if ( last_is_word )		/* regenerate the space tokens */
     { t.type = TOK_SPACE;
       t.value.string = " ";

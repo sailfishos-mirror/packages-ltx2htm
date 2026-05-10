@@ -513,7 +513,10 @@ language_map(table,     'Table').
 
 #(tell(_File),          []) :- onefile(true).
 #(tell(File),           tell(File)).
-#(head(Head),           [html('<head>'), HtmlHead, Style, html('</head>')]) :-
+#(head(Head),           [html('<head>'),
+			 html('<meta charset="UTF-8">'),
+			 HtmlHead, Style,
+			 html('</head>')]) :-
     expand_macros(Head, HtmlHead),
     expand_macros(#style, Style).
 #(style,                [ html('<style type="text/css">'),
