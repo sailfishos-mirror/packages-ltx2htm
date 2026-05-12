@@ -425,7 +425,7 @@ myungetc(int c, Input fd)
       break;
     case INPUT_STRING:
     default:
-      if ( *fd->stream.string )
+      if ( c != EOF )
 	fd->stream.string--;
       break;
   }
