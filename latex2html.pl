@@ -1310,6 +1310,8 @@ cmd('{', nospace('{')).
 cmd('}', nospace('}')).
 cmd('[', nospace('[')).
 cmd(']', nospace(']')).
+cmd(textless,    html('&lt;')).
+cmd(textgreater, html('&gt;')).
 cmd('"'({'\\i'}), html('&iuml;')).      % \"\i
 cmd('"'({C}), html(Cmd)) :-             % \"[ouey...]
     atomic_list_concat([&, C, 'uml;'], Cmd).
