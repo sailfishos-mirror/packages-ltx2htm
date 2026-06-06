@@ -34,17 +34,17 @@
 */
 
 :- module(latex2html4xpce, []).
+:- use_module(latex2html,
+	      [ latex2html_module/0,
+	        tex_load_commands/1,
+	        translate/3,
+	        add_to_index/1,
+	        clean_tt/2,
+	        add_to_index/2,
+	        translate_table/3
+	      ]).
 :- autoload(library(apply),[maplist/3]).
 :- autoload(library(lists),[append/3]).
-:- autoload(library(ltx2htm/latex2html),
-	    [ latex2html_module/0,
-	      tex_load_commands/1,
-	      translate/3,
-	      add_to_index/1,
-	      clean_tt/2,
-	      add_to_index/2,
-	      translate_table/3
-	    ]).
 
 :- latex2html_module.
 :- tex_load_commands(xpce).
@@ -83,13 +83,29 @@ env(xpceonly(_, Tokens), HTML) :-
 
 cmd(objectname({Name}),         #b([nospace(@), Name])).
 cmd(noclass({Name}),            #b(Name)).
+%   Anchor scheme: the .md-generated reference manual labels each
+%   class chapter "sec:class-<name>" via the {#class-<name>} attribute
+%   on its top-level heading; the hand-written UserGuide should label
+%   its \classsummary entries with the same anchor (it was previously
+%   "class:<name>"; existing .tex files need updating).
+
 cmd(class({Name}),              #lref(Label, Name)) :-
-    atom_concat('class:', Name, Label),
+    class_section_label(Name, Label),
     add_to_index(Name).
 cmd(classs({Name}),             #lref(Label, NameS)) :-
-    atom_concat('class:', Name, Label),
+    class_section_label(Name, Label),
     atom_concat(Name, s, NameS),
     add_to_index(Name).
+
+%   PlDoc's section_label/1 strips underscores via
+%   delete_unsafe_label_chars/2 before emitting \label{...}. Match
+%   that here so links to `class-foo_bar` find `sec:class-foobar`.
+
+class_section_label(Name, Label) :-
+    atom_chars(Name, NameChars),
+    delete(NameChars, '_', SafeChars),
+    atom_chars(Safe, SafeChars),
+    atom_concat('sec:class-', Safe, Label).
 cmd(tool({Name}),               #strong(+Name)).
 cmd(demo({Name}),               #strong(+Name)).
 cmd(type({Name}),               #b([#code(+Name)])).
@@ -135,6 +151,8 @@ cmd(g({Term}),  #lref(RefName, Term)) :-
 cmd(line({Tokens}), #quote(Line)) :-
     translate(Tokens, normal, Line).
 cmd(classvar({Class}, {Var}), #b([#code([+Class,nospace('.'),+Var])])).
+cmd(classinstvar({Class}, {Var}), #b([#code([+Class,nospace('-'),+Var])])).
+cmd(errid({Id}), #b([#code([nospace('!'),+Id])])).
 cmd(tab, #code(verb('\t'))).
 cmd(opt({Arg}), #embrace("[]", +Arg)).
 cmd(zom({Arg}), #embrace("{}", +Arg)).

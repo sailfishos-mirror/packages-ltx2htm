@@ -12,6 +12,8 @@
 \classboth{+}{+}
 \type{+}
 \classvar{+}{+}
+\classinstvar{+}{+}
+\errid{+}
 
 \setupfancyplain
 
