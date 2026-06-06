@@ -713,6 +713,8 @@ clean_name([\Special], Out) :-
     urldef(Special, Out),
     !.
 clean_name([\tt, Out], Out) :- !.
+clean_name(\textgreater, '>') :- !.
+clean_name(\textless,    '<') :- !.
 clean_name([' '|T], Out) :-
     !,
     clean_name(T, Out).
