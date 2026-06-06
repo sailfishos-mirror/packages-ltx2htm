@@ -112,22 +112,90 @@ cmd(type({Name}),               #b([#code(+Name)])).
 cmd(send({Name}),               #b([#code(nospace(->)), Name])).
 cmd(get({Name}),                #b([#code(nospace(<-)), Name])).
 cmd(both({Name}),               #b([#code(nospace(<->)), Name])).
-cmd(classsend({Class}, {Name}), #b([+Class, #code(nospace(->)), +Name])).
-cmd(classget({Class}, {Name}),  #b([+Class, #code(nospace(<-)), +Name])).
-cmd(classboth({Class}, {Name}), #b([+Class, #code(nospace(<->)), +Name])).
+cmd(classsend({Class}, {Name}),
+    #lref(Label, #b([+Class, #code(nospace(->)), +Name]))) :-
+    member_anchor(Class, send, Name, Label).
+cmd(classget({Class}, {Name}),
+    #lref(Label, #b([+Class, #code(nospace(<-)), +Name]))) :-
+    member_anchor(Class, get, Name, Label).
+cmd(classboth({Class}, {Name}),
+    #lref(Label, #b([+Class, #code(nospace(<->)), +Name]))) :-
+    member_anchor(Class, both, Name, Label).
 cmd(sendmethod(_M, {Class}, {Selector}, {Args}),
-    #defitem([ #strong([Class, ' ', nospace('->'), Selector, nospace(':')]),
-               ' ', #var(+Args)
-             ])).
+    #defitem(pubdef,
+             [ html(ObjTag), html('</a>'),
+               #label(Label,
+                  [ #strong([Class, ' ', nospace('->'), Selector, nospace(':')]),
+                    ' ', #var(+Args)
+                  ])
+             ])) :-
+    member_anchor(Class, send, Selector, Label),
+    member_data_obj(Class, send, Selector, ObjTag),
+    add_to_index(Label, +Label).
 cmd(getmethod(_M, {Class}, {Selector}, {Args}, {Ret}),
-    #defitem([ #strong([Class, ' ', nospace('<-'), Selector, nospace(':')]),
-               ' ', #var(+Args),
-               ' ', nospace('->'), ' ', #var(+Ret)
-             ])).
+    #defitem(pubdef,
+             [ html(ObjTag), html('</a>'),
+               #label(Label,
+                  [ #strong([Class, ' ', nospace('<-'), Selector, nospace(':')]),
+                    ' ', #var(+Args),
+                    ' ', nospace('->'), ' ', #var(+Ret)
+                  ])
+             ])) :-
+    member_anchor(Class, get, Selector, Label),
+    member_data_obj(Class, get, Selector, ObjTag),
+    add_to_index(Label, +Label).
 cmd(bothmethod(_M, {Class}, {Selector}, {Args}),
-    #defitem([ #strong([Class, ' ', nospace('<->'), Selector, nospace(':')]),
-               ' ', #var(+Args)
-             ])).
+    #defitem(pubdef,
+             [ html(ObjTag), html('</a>'),
+               #label(Label,
+                  [ #strong([Class, ' ', nospace('<->'), Selector, nospace(':')]),
+                    ' ', #var(+Args)
+                  ])
+             ])) :-
+    member_anchor(Class, both, Selector, Label),
+    member_data_obj(Class, both, Selector, ObjTag),
+    add_to_index(Label, +Label).
+
+%   Anchor naming scheme for class members. Mirrors the class-chapter
+%   anchor (sec:class-<name>): "class-<C>-<kind>-<S>" where C and S
+%   have their underscores stripped (PlDoc's section_label/1 strips
+%   them when emitting \label{}, so we have to match here for cross-
+%   document hyperlinks to resolve).
+
+member_anchor(C, K, S, Label) :-
+    clean_anchor_part(C, C1),
+    clean_anchor_part(S, S1),
+    format(atom(Label), 'class-~w-~w-~w', [C1, K, S1]).
+
+%   The parsed arg may be a bare atom (e.g. =frame=) or a one-element
+%   list (=|[frame]|=) depending on how ltx2htm tokenised the brace
+%   group. Normalise, then strip underscores so cross-document
+%   hyperlinks match PlDoc's section_label/1 scrubbing.
+
+clean_anchor_part(In, Out) :-
+    raw_anchor_part(In, Atom),
+    atom_chars(Atom, Chars),
+    delete(Chars, '_', Safe),
+    atom_chars(Out, Safe).
+
+%   Build a "<a data-obj=\"xpce(C,K,S)\">" opening tag for the
+%   manindex.db SGML walker (packages/pldoc/man_index.pl). The walker
+%   takes the first <a> with a data-obj attribute inside a
+%   <dt class="pubdef">, so we emit a self-contained anchor before the
+%   visible #label one. Underscores are preserved here -- they must
+%   match the actual class and selector names so
+%   pldoc:atom_to_object/2 can round-trip the term.
+
+member_data_obj(C, K, S, Tag) :-
+    raw_anchor_part(C, C1),
+    raw_anchor_part(S, S1),
+    format(atom(Tag), '<a data-obj="xpce(~w,~w,~w)">', [C1, K, S1]).
+
+raw_anchor_part(In, Atom) :-
+    (   atom(In)         -> Atom = In
+    ;   In = [A], atom(A) -> Atom = A
+    ;   atomic_list_concat(In, '', Atom)
+    ).
 cmd(manualtool({Descr}, {Menu}),
     #defitem([ #strong(+Descr), ' ', #i(#embrace(+Menu))])).
 cmd(secoverview({Label}, {Title}),
