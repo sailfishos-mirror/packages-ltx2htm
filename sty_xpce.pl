@@ -155,6 +155,17 @@ cmd(bothmethod(_M, {Class}, {Selector}, {Args}),
     member_anchor(Class, both, Selector, Label),
     member_data_obj(Class, both, Selector, ObjTag),
     add_to_index(Label, +Label).
+cmd(classvarmethod(_M, {Class}, {Var}, {Args}),
+    #defitem(pubdef,
+             [ html(ObjTag), html('</a>'),
+               #label(Label,
+                  [ #strong([Class, nospace('.'), Var, nospace(':')]),
+                    ' ', #var(+Args)
+                  ])
+             ])) :-
+    member_anchor(Class, classvar, Var, Label),
+    member_data_obj(Class, classvar, Var, ObjTag),
+    add_to_index(Label, +Label).
 
 %   Anchor naming scheme for class members. Mirrors the class-chapter
 %   anchor (sec:class-<name>): "class-<C>-<kind>-<S>" where C and S
@@ -189,7 +200,9 @@ clean_anchor_part(In, Out) :-
 member_data_obj(C, K, S, Tag) :-
     raw_anchor_part(C, C1),
     raw_anchor_part(S, S1),
-    format(atom(Tag), '<a data-obj="xpce(~w,~w,~w)">', [C1, K, S1]).
+    format(atom(Tag),
+           '<a data-obj="xpce(~q,~w,~q)">',
+           [C1, K, S1]).
 
 raw_anchor_part(In, Atom) :-
     (   atom(In)         -> Atom = In
