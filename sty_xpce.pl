@@ -119,9 +119,10 @@ cmd(sendmethod(_M, {Class}, {Selector}, {Args}),
     #defitem([ #strong([Class, ' ', nospace('->'), Selector, nospace(':')]),
                ' ', #var(+Args)
              ])).
-cmd(getmethod(_M, {Class}, {Selector}, {Args}),
+cmd(getmethod(_M, {Class}, {Selector}, {Args}, {Ret}),
     #defitem([ #strong([Class, ' ', nospace('<-'), Selector, nospace(':')]),
-               ' ', #var(+Args)
+               ' ', #var(+Args),
+               ' ', nospace('->'), ' ', #var(+Ret)
              ])).
 cmd(bothmethod(_M, {Class}, {Selector}, {Args}),
     #defitem([ #strong([Class, ' ', nospace('<->'), Selector, nospace(':')]),

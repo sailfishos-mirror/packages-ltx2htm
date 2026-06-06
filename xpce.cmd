@@ -1,6 +1,6 @@
 \sendmethod*{-}{-}{+}=item
 \bothmethod*{-}{-}{+}=item
-\getmethod*{-}{-}{+}=item
+\getmethod*{-}{-}{-}{+}=item
 \manualtool{+}{+}=item
 \secoverview{-}{+}=item
 \glossitem{-}=item

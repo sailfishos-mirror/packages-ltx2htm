@@ -196,6 +196,8 @@
 \'{-}
 \"{-}
 \#
+\textless
+\textgreater
 \copyright
 \circ
 \year
