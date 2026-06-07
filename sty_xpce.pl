@@ -147,12 +147,16 @@ cmd(getmethod(_M, {Class}, {Selector}, {Args}, {Ret}),
 cmd(bothmethod(_M, {Class}, {Selector}, {Args}),
     #defitem(pubdef,
              [ html(ObjTag), html('</a>'),
+               #label(SendAlias, []),       % so classsend{Class}{Sel}
+               #label(GetAlias,  []),       % so classget{Class}{Sel}
                #label(Label,
                   [ #strong([Class, ' ', nospace('<->'), Selector, nospace(':')]),
                     ' ', #var(+Args)
                   ])
              ])) :-
     member_anchor(Class, both, Selector, Label),
+    member_anchor(Class, send, Selector, SendAlias),
+    member_anchor(Class, get,  Selector, GetAlias),
     member_data_obj(Class, both, Selector, ObjTag),
     add_to_index(Label, +Label).
 cmd(classvarmethod(_M, {Class}, {Var}, {Args}),
