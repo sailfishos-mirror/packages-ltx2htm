@@ -242,7 +242,17 @@ cmd(classvar({Class}, {Var}),
 cmd(classinstvar({Class}, {Var}),
     #lref(Label, #b([+Class, #code(nospace('-')), +Var]))) :-
     member_anchor(Class, both, Var, Label).
-cmd(errid({Id}), #b([#code([nospace('!'),+Id])])).
+cmd(errid({Id}), #lref(Label, #b([nospace('!'), +Id]))) :-
+    error_anchor(Id, Label).
+
+%   Anchor for error sections written by export_md.pl as
+%   =|{#error-<id>}|=. Underscores survive the slug -- it must
+%   match the safe_id/2 stripping pce_html_manual uses to
+%   compute the section's =|sec:error-<id>|= label.
+
+error_anchor(In, Label) :-
+    clean_anchor_part(In, Id),
+    atom_concat('sec:error-', Id, Label).
 cmd(tab, #code(verb('\t'))).
 cmd(opt({Arg}), #embrace("[]", +Arg)).
 cmd(zom({Arg}), #embrace("{}", +Arg)).
