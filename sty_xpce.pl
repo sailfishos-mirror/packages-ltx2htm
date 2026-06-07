@@ -237,10 +237,10 @@ cmd(g({Term}),  #lref(RefName, Term)) :-
 cmd(line({Tokens}), #quote(Line)) :-
     translate(Tokens, normal, Line).
 cmd(classvar({Class}, {Var}),
-    #lref(Label, #b([#code([+Class,nospace('.'),+Var])]))) :-
+    #lref(Label, #b([+Class, #code(nospace('.')), +Var]))) :-
     member_anchor(Class, classvar, Var, Label).
 cmd(classinstvar({Class}, {Var}),
-    #lref(Label, #b([#code([+Class,nospace('-'),+Var])]))) :-
+    #lref(Label, #b([+Class, #code(nospace('-')), +Var]))) :-
     member_anchor(Class, both, Var, Label).
 cmd(errid({Id}), #b([#code([nospace('!'),+Id])])).
 cmd(tab, #code(verb('\t'))).
