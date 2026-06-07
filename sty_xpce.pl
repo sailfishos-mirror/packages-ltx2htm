@@ -236,8 +236,12 @@ cmd(g({Term}),  #lref(RefName, Term)) :-
     format(string(RefName), 'gloss:~w', [Ref]).
 cmd(line({Tokens}), #quote(Line)) :-
     translate(Tokens, normal, Line).
-cmd(classvar({Class}, {Var}), #b([#code([+Class,nospace('.'),+Var])])).
-cmd(classinstvar({Class}, {Var}), #b([#code([+Class,nospace('-'),+Var])])).
+cmd(classvar({Class}, {Var}),
+    #lref(Label, #b([#code([+Class,nospace('.'),+Var])]))) :-
+    member_anchor(Class, classvar, Var, Label).
+cmd(classinstvar({Class}, {Var}),
+    #lref(Label, #b([#code([+Class,nospace('-'),+Var])]))) :-
+    member_anchor(Class, both, Var, Label).
 cmd(errid({Id}), #b([#code([nospace('!'),+Id])])).
 cmd(tab, #code(verb('\t'))).
 cmd(opt({Arg}), #embrace("[]", +Arg)).
