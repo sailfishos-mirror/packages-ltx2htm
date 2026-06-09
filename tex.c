@@ -1006,7 +1006,13 @@ parseCommand(Input fd, const char *name, CallBack func, void *ctx)
   int flags = 0;
 
   if ( !cmd )
-  { fprintf(stderr, "[WARNING: Unknown command: %s]\n", name);
+  { /* Commands starting with '_' are produced by the C-side
+       tokeniser when the .tex stream contains an underscore-prefixed
+       identifier after a backslash (e.g. 'object->\_check'); the
+       .pl-side cmd/2 hook in latex2html.pl renders them as the
+       literal text they were meant to be, so don't shout. */
+    if ( name[1] != '_' )
+      fprintf(stderr, "[WARNING: Unknown command: %s]\n", name);
     cmd = newCommand(&name[1]);
   }
 

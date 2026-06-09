@@ -1060,11 +1060,15 @@ cmd(usepackage(_, {_File}, _), preamble, []) :- !.
 cmd('RequirePackage'(_, {_File}), preamble, []) :- !.
 cmd(date({Date}), []) :-
     retractall(date(_)),
-    translate(Date, normal, HTML),
+    date_tokens(Date, Tokens),
+    translate(Tokens, normal, HTML),
     assert(date(HTML)).
 cmd(today, _, html(Atom)) :-
     get_time(Now),
     format_time(atom(Atom), '%B %e, %Y', Now).
+
+date_tokens(List, List) :- is_list(List), !.
+date_tokens(Atom, Tokens) :- tex_atom_to_tokens(Atom, Tokens).
 cmd(newenvironment({_Name}, {_Begin}, {_End}), preamble, []) :- !.
 cmd(excludecomment({_Name}), preamble, []) :- !.
 cmd(makeindex, preamble, []) :-
