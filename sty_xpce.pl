@@ -163,6 +163,42 @@ cmd(bothmethod(_M, {Class}, {Selector}, {Args}),
     member_data_obj(Class, both, Selector, ObjTag),
     args_tokens(Args, ArgsTokens),
     add_to_index(Label, +Label).
+%   Instance variable rendered with its documented access. All four
+%   variants index under =|xpce(C, ivar, N)|= so the index has one
+%   bucket per ivar regardless of which access notation the author
+%   used. Each variant emits anchors for every access form
+%   (=|class-C-send-N|=, =|class-C-get-N|=, =|class-C-both-N|=, and
+%   the primary =|class-C-ivar-N|=) so inline references using any
+%   of the arrow forms still resolve.
+
+cmd(ivarbothmethod(_M, {Class}, {Selector}, {Args}), DOM) :-
+    ivar_def(Class, Selector, Args, [' ', nospace('<->'), ' '], DOM).
+cmd(ivargetmethod(_M, {Class}, {Selector}, {Args}), DOM) :-
+    ivar_def(Class, Selector, Args, [' ', nospace('<-'), ' '], DOM).
+cmd(ivarsendmethod(_M, {Class}, {Selector}, {Args}), DOM) :-
+    ivar_def(Class, Selector, Args, [' ', nospace('->'), ' '], DOM).
+cmd(ivarnonemethod(_M, {Class}, {Selector}, {Args}), DOM) :-
+    ivar_def(Class, Selector, Args, [nospace('-')], DOM).
+
+ivar_def(Class, Selector, Args, AccessVisible,
+         #defitem(pubdef,
+                  [ html(ObjTag), html('</a>'),
+                    #label(SendAlias, []),
+                    #label(GetAlias,  []),
+                    #label(BothAlias, []),
+                    #label(Label,
+                       [ #strong([Class | AccessVisible0]),
+                         ' ', #var(+ArgsTokens)
+                       ])
+                  ])) :-
+    append(AccessVisible, [Selector, nospace(':')], AccessVisible0),
+    member_anchor(Class, ivar, Selector, Label),
+    member_anchor(Class, send, Selector, SendAlias),
+    member_anchor(Class, get,  Selector, GetAlias),
+    member_anchor(Class, both, Selector, BothAlias),
+    member_data_obj(Class, ivar, Selector, ObjTag),
+    args_tokens(Args, ArgsTokens),
+    add_to_index(Label, +Label).
 cmd(classvarmethod(_M, {Class}, {Var}, {Args}),
     #defitem(pubdef,
              [ html(ObjTag), html('</a>'),
@@ -259,7 +295,7 @@ cmd(classvar({Class}, {Var}),
     member_anchor(Class, classvar, Var, Label).
 cmd(classinstvar({Class}, {Var}),
     #lref(Label, #b([+Class, #code(nospace('-')), +Var]))) :-
-    member_anchor(Class, both, Var, Label).
+    member_anchor(Class, ivar, Var, Label).
 cmd(errid({Id}), #lref(Label, #b([nospace('!'), +Id]))) :-
     error_anchor(Id, Label).
 

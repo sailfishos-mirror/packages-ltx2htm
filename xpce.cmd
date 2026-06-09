@@ -2,6 +2,10 @@
 \bothmethod*{-}{-}{+}=item
 \getmethod*{-}{-}{-}{+}=item
 \classvarmethod*{-}{-}{+}=item
+\ivarbothmethod*{-}{-}{+}=item
+\ivargetmethod*{-}{-}{+}=item
+\ivarsendmethod*{-}{-}{+}=item
+\ivarnonemethod*{-}{-}{+}=item
 \manualtool{+}{+}=item
 \secoverview{-}{+}=item
 \glossitem{-}=item
