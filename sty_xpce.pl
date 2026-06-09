@@ -43,8 +43,8 @@
 	        add_to_index/2,
 	        translate_table/3
 	      ]).
-:- autoload(library(apply),[maplist/3]).
-:- autoload(library(lists),[append/3]).
+:- use_module(library(apply), [maplist/3]).
+:- use_module(library(lists), [append/3, delete/3]).
 
 :- latex2html_module.
 :- tex_load_commands(xpce).
