@@ -3,6 +3,9 @@
 \documentstyle[-]{-}
 \documentclass[-]{-}
 \usepackage[-]{-}[-]=prolog
+\RequirePackage[-]{-}
+\date{-}
+\today
 \makeindex
 \title{+}
 \booktitle

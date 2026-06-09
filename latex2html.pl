@@ -1057,6 +1057,16 @@ cmd(htmlpackage({File}), preamble, []) :-
 cmd(documentclass(_, {Class}), preamble, []) :-
     assert(documentclass(Class)).
 cmd(usepackage(_, {_File}, _), preamble, []) :- !.
+cmd('RequirePackage'(_, {_File}), preamble, []) :- !.
+cmd(date({Date}), []) :-
+    retractall(date(_)),
+    translate(Date, normal, HTML),
+    assert(date(HTML)).
+cmd(today, _, html(Atom)) :-
+    get_time(Now),
+    format_time(atom(Atom), '%B %e, %Y', Now).
+cmd(newenvironment({_Name}, {_Begin}, {_End}), preamble, []) :- !.
+cmd(excludecomment({_Name}), preamble, []) :- !.
 cmd(makeindex, preamble, []) :-
     retractall(makeindex(_)),
     asserta(makeindex(true)).
@@ -1306,10 +1316,22 @@ cmd('%', nospace('%')).
 cmd('#', nospace('#')).
 cmd('$', nospace('$')).
 cmd('&', nospace('&')).
+cmd('_', nospace('_')).
 cmd('{', nospace('{')).
 cmd('}', nospace('}')).
 cmd('[', nospace('[')).
 cmd(']', nospace(']')).
+
+%   The C-side tokeniser treats =|_|= as a word character, so an
+%   escaped underscore followed by letters (=|\_method|=, =|\_check|=,
+%   =|\_sink|=, ...) parses as a single =|_method|= command rather
+%   than =|\_|= + =|method|=. Catch those by name so they render as
+%   the literal text =|_<word>|= they were meant to be.
+
+cmd(Cmd, _, nospace(Cmd)) :-
+    atom(Cmd),
+    atom_concat('_', _, Cmd),
+    !.
 cmd(textless,    html('&lt;')).
 cmd(textgreater, html('&gt;')).
 cmd('"'({'\\i'}), html('&iuml;')).      % \"\i
