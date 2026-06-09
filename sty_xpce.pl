@@ -126,23 +126,26 @@ cmd(sendmethod(_M, {Class}, {Selector}, {Args}),
              [ html(ObjTag), html('</a>'),
                #label(Label,
                   [ #strong([Class, ' ', nospace('->'), Selector, nospace(':')]),
-                    ' ', #var(+Args)
+                    ' ', #var(+ArgsTokens)
                   ])
              ])) :-
     member_anchor(Class, send, Selector, Label),
     member_data_obj(Class, send, Selector, ObjTag),
+    args_tokens(Args, ArgsTokens),
     add_to_index(Label, +Label).
 cmd(getmethod(_M, {Class}, {Selector}, {Args}, {Ret}),
     #defitem(pubdef,
              [ html(ObjTag), html('</a>'),
                #label(Label,
                   [ #strong([Class, ' ', nospace('<-'), Selector, nospace(':')]),
-                    ' ', #var(+Args),
-                    ' ', nospace('->'), ' ', #var(+Ret)
+                    ' ', #var(+ArgsTokens),
+                    ' ', nospace('->'), ' ', #var(+RetTokens)
                   ])
              ])) :-
     member_anchor(Class, get, Selector, Label),
     member_data_obj(Class, get, Selector, ObjTag),
+    args_tokens(Args, ArgsTokens),
+    args_tokens(Ret,  RetTokens),
     add_to_index(Label, +Label).
 cmd(bothmethod(_M, {Class}, {Selector}, {Args}),
     #defitem(pubdef,
@@ -151,25 +154,40 @@ cmd(bothmethod(_M, {Class}, {Selector}, {Args}),
                #label(GetAlias,  []),       % so classget{Class}{Sel}
                #label(Label,
                   [ #strong([Class, ' ', nospace('<->'), Selector, nospace(':')]),
-                    ' ', #var(+Args)
+                    ' ', #var(+ArgsTokens)
                   ])
              ])) :-
     member_anchor(Class, both, Selector, Label),
     member_anchor(Class, send, Selector, SendAlias),
     member_anchor(Class, get,  Selector, GetAlias),
     member_data_obj(Class, both, Selector, ObjTag),
+    args_tokens(Args, ArgsTokens),
     add_to_index(Label, +Label).
 cmd(classvarmethod(_M, {Class}, {Var}, {Args}),
     #defitem(pubdef,
              [ html(ObjTag), html('</a>'),
                #label(Label,
                   [ #strong([Class, nospace('.'), Var, nospace(':')]),
-                    ' ', #var(+Args)
+                    ' ', #var(+ArgsTokens)
                   ])
              ])) :-
     member_anchor(Class, classvar, Var, Label),
     member_data_obj(Class, classvar, Var, ObjTag),
+    args_tokens(Args, ArgsTokens),
     add_to_index(Label, +Label).
+
+%   Tokenise the args atom of a class member into TeX tokens before
+%   handing it to translate/3 via =|+ArgsTokens|=. Without this,
+%   xpce's rich arg shapes (=|name=name|=, =|[int]|=, =|\Sbar{}|=...)
+%   trip translate's =|translate(X) failed in mode "normal"|= path
+%   because the atom is neither =|[]|= nor =|[H|T]|=.
+
+args_tokens('',   []) :- !.
+args_tokens(List, List) :-
+    is_list(List),
+    !.
+args_tokens(Atom, Tokens) :-
+    tex:tex_atom_to_tokens(Atom, Tokens).
 
 %   Anchor naming scheme for class members. Mirrors the class-chapter
 %   anchor (sec:class-<name>): "class-<C>-<kind>-<S>" where C and S
