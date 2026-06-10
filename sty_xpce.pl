@@ -124,18 +124,21 @@ cmd(classboth({Class}, {Name}),
 cmd(sendmethod(_M, {Class}, {Selector}, {Args}),
     #defitem(pubdef,
              [ html(ObjTag), html('</a>'),
+               #label(BothAlias, []),       % inline \classboth{...} fallback
                #label(Label,
                   [ #strong([Class, ' ', nospace('->'), Selector, nospace(':')]),
                     ' ', #var(+ArgsTokens)
                   ])
              ])) :-
     member_anchor(Class, send, Selector, Label),
+    member_anchor(Class, both, Selector, BothAlias),
     member_data_obj(Class, send, Selector, ObjTag),
     args_tokens(Args, ArgsTokens),
     add_to_index(Label, +Label).
 cmd(getmethod(_M, {Class}, {Selector}, {Args}, {Ret}),
     #defitem(pubdef,
              [ html(ObjTag), html('</a>'),
+               #label(BothAlias, []),       % inline \classboth{...} fallback
                #label(Label,
                   [ #strong([Class, ' ', nospace('<-'), Selector, nospace(':')]),
                     ' ', #var(+ArgsTokens),
@@ -143,6 +146,7 @@ cmd(getmethod(_M, {Class}, {Selector}, {Args}, {Ret}),
                   ])
              ])) :-
     member_anchor(Class, get, Selector, Label),
+    member_anchor(Class, both, Selector, BothAlias),
     member_data_obj(Class, get, Selector, ObjTag),
     args_tokens(Args, ArgsTokens),
     args_tokens(Ret,  RetTokens),
