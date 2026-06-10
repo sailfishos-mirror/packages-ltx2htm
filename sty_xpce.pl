@@ -233,7 +233,7 @@ args_tokens(Atom, Tokens) :-
 
 member_anchor(C, K, S, Label) :-
     clean_anchor_part(C, C1),
-    clean_anchor_part(S, S1),
+    raw_anchor_part(S, S1),
     format(atom(Label), 'class-~w-~w-~w', [C1, K, S1]).
 
 %   The parsed arg may be a bare atom (e.g. =frame=) or a one-element
