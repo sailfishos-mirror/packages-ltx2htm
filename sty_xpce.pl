@@ -105,6 +105,13 @@ cmd(classs({Name}),             #lref(Label, NameS)) :-
     class_section_label(Name, Label),
     atom_concat(Name, s, NameS),
     add_to_index(Name).
+%   Like \class{}, but the displayed label is taken from the second
+%   argument so a sentence-leading capitalised reference ("Graphical
+%   objects ...") keeps the original capitalisation while still
+%   linking to the canonical lowercase class section.
+cmd(classsuffix({Slug}, {Display}), #lref(Label, Display)) :-
+    class_section_label(Slug, Label),
+    add_to_index(Slug).
 
 %   PlDoc's section_label/1 strips underscores via
 %   delete_unsafe_label_chars/2 before emitting \label{...}. Match

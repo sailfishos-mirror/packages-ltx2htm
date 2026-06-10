@@ -15,6 +15,7 @@
 \classget{+}{+}
 \classsend{+}{+}
 \classboth{+}{+}
+\classsuffix{-}{-}
 \type{+}
 \classvar{+}{+}
 \classinstvar{+}{+}
