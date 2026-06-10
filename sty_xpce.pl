@@ -81,7 +81,16 @@ env(xpceonly(_, Tokens), HTML) :-
 %cmd(productversion, '3.1') :- pwtrue.
 %cmd(productversion, '4.9.3').          % dynamic!
 
-cmd(objectname({Name}),         #b([nospace(@), Name])).
+%   Hyperlink global object references like =|@pce|=, =|@nil|=, ...
+%   into their dedicated section in the Objects chapter. The
+%   sty_xpce-side label =|sec:object-<safe>|= mirrors what
+%   doc_latex emits for the matching =|{#object-<safe>}|= heading
+%   in =|objects.md|=. If no such section exists, ltx2htm leaves
+%   the lref unresolved and the bold inner content shows through.
+cmd(objectname({Name}), #lref(Label, #b([nospace(@), Name]))) :-
+    raw_anchor_part(Name, Name1),
+    clean_anchor_part(Name1, Safe),
+    atom_concat('sec:object-', Safe, Label).
 cmd(noclass({Name}),            #b(Name)).
 %   Anchor scheme: the .md-generated reference manual labels each
 %   class chapter "sec:class-<name>" via the {#class-<name>} attribute
