@@ -1851,7 +1851,6 @@ static functor_t FUNCTOR_html3;		/* html/3 */
 static functor_t FUNCTOR_nospace1;	/* nospace/1 */
 static atom_t	 ATOM_begin_group;	/* '\{' */
 static atom_t	 ATOM_end_group;	/* '\}' */
-static atom_t	 ATOM_nbsp;		/* '~' */
 static atom_t	 ATOM_par;		/* 'par' */
 static atom_t	 ATOM_star;		/* * */
 static atom_t	 ATOM_minus;		/* - */
@@ -1891,7 +1890,6 @@ initPrologConstants()
   ATOM_begin_group  = PL_new_atom("\\{");
   ATOM_end_group    = PL_new_atom("\\}");
   ATOM_par	    = PL_new_atom("par");
-  ATOM_nbsp	    = PL_new_atom("~");
   ATOM_star	    = PL_new_atom("*");
   ATOM_minus	    = PL_new_atom("-");
   ATOM_space	    = PL_new_atom(" ");
